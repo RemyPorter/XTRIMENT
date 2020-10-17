@@ -51,18 +51,15 @@ function nextScale() {
 let lastNote = 60;
 let lastScale = scaleFromNote(lastNote, 0, MAJOR);
 
-let inst;
-const ADSR = [0.25, 0.01, 0.25, 0.25];
+let inst = new p5.PolySynth(p5.MonoSynth, 64);
 
 function setup() {
 	let cnv = createCanvas(windowWidth, windowHeight);
 	cnv.mousePressed(playNote);
-	inst = new p5.PolySynth();
-	//inst.setADSR(ADSR[0], ADSR[1], ADSR[2], ADSR[3]);
 }
 
 function drawKey(note) {
-	fill(255);
+	fill("#FFFFFF");
 	rect(0, 0, width/(lastScale.length*1.1), height);
 	fill(0);
 	let l = labelForNote(note);
@@ -70,8 +67,8 @@ function drawKey(note) {
 }
 
 function draw() {
-	background(0);
 	clear();
+	background(0);
 	lastScale.forEach((n) => {
 		drawKey(Math.trunc(n));
 		translate(width/(lastScale.length), 0);
@@ -87,5 +84,5 @@ function playNote() {
 	let n = mouseX / width * lastScale.length;
 	lastNote = lastScale[Math.trunc(n)];
 	lastScale = nextScale();
-	inst.play(freqForNote(lastNote), 1, 0, 1);
+	inst.play(freqForNote(lastNote), 1, 0, 2);
 }
