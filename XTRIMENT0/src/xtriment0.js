@@ -42,6 +42,9 @@ function nextScale() {
 	} else if (r < 0.25 && p <= 1) {
 		p--;
 	}
+	if (lastNote > 127-12 || lastNote < 12) {
+		lastNote = 60;
+	}
 	return scaleFromNote(lastNote, p, random(scales));
 }
 
@@ -52,10 +55,10 @@ let inst;
 const ADSR = [0.25, 0.01, 0.25, 0.25];
 
 function setup() {
-	createCanvas(windowWidth, windowHeight);
+	let cnv = createCanvas(windowWidth, windowHeight);
+	cnv.mousePressed(playNote);
 	inst = new p5.PolySynth();
 	//inst.setADSR(ADSR[0], ADSR[1], ADSR[2], ADSR[3]);
-	userStartAudio();
 }
 
 function drawKey(note) {
@@ -70,14 +73,19 @@ function draw() {
 	background(0);
 	clear();
 	lastScale.forEach((n) => {
-		drawKey(round(n));
+		drawKey(Math.trunc(n));
 		translate(width/(lastScale.length), 0);
 	});
 }
 
-function mousePressed() {
+function freqForNote(n) {
+  return pow(2, (n-69)/12.0) * 440.0;
+}
+
+function playNote() {
+	userStartAudio();
 	let n = mouseX / width * lastScale.length;
-	lastNote = lastScale[round(n)];
+	lastNote = lastScale[Math.trunc(n)];
 	lastScale = nextScale();
-	inst.play(lastNote, 1, 0, 1);
+	inst.play(freqForNote(lastNote), 1, 0, 1);
 }
