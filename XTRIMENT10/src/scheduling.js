@@ -1,28 +1,50 @@
-//Adapter which lets a sound play in response to an event
-class Trigger {
-	constructor(sound) {
-		this.sound = sound;
+function addEvent(obj, name) {
+	let obvs = `${name}Observers`;
+	let onEvt = `on${name}`;
+	let emitEvt = `emit${name}`;
+	let stopListening = `unsub${name}`;
+	obj[obvs] = new Map();
+	obj[onEvt] = (observer, callback) => {
+		obj[obvs].set(observer, callback);
+	};
+	obj[emitEvt] = (data) => {
+		for (const [obs, cb] of obj[obvs].entries()) {
+			cb(data);
+		}
 	}
-	changeSound(sound) {
-		this.sound = sound;
+	obj[stopListening] = (obs) => {
+		obj[obvs].delete(obs);
 	}
-	trigger() {
-		this.sound.play();
+}
+
+class TimeRangeScheduler {
+	constructor(beats) {
+		this.beats = beats;
+		addEvent(this, "Tick");
+		this.lastProgress = -1;
+	}
+
+	tick(progress) {
+		let lastBeat = round(this.beats * this.lastProgress);
+		let thisBeat = round(this.beats * progress);
+		if (thisBeat != lastBeat) this.emitTick(thisBeat);
+		this.lastProgress = progress;
 	}
 }
 
 //Tracks the beats and what has triggered during this loop
 //trigger is the voice we want to have play
 class BeatScheduler {
-	constructor(numBeats, trigger) {
-		this.trigger = trigger;
+	constructor(numBeats) {
 		this.beats = [];
-		this.triggers = [];
 		for (let i = 0; i < numBeats; i++) {
 			this.beats.push(false);
-			this.triggers.push(false);
 		}
-		this.numBeats = numBeats;
+		this.scheduler = new TimeRangeScheduler(numBeats);
+		addEvent(this, "Beat");
+		this.scheduler.onTick(this, (beat) => {
+			if (this.beats[beat]) this.emitBeat(beat);
+		});
 	}
 
 	//toggle whether we trigger (or not) on a beat
@@ -30,22 +52,8 @@ class BeatScheduler {
 		this.beats[n] = !this.beats[n];
 	}
 
-	//progress through our loop duration
-	//play the beat if it's due to be played
 	tick(progress) {
-		let i = round(this.numBeats * progress);
-		if (!this.triggers[i] && this.beats[i]) {
-			this.triggers[i] = true;
-			this.trigger.play();
-		}
-	}
-
-	//we've hit the top of the loop, so reset all
-	//our triggers
-	loop() {
-		for (let i = 0; i < this.triggers.length; i++) {
-			this.triggers[i] = false;
-		}
+		this.scheduler.tick(progress);
 	}
 }
 
