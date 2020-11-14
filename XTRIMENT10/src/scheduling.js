@@ -47,6 +47,10 @@ class BeatScheduler {
 		});
 	}
 
+	length() {
+		return this.beats.length;
+	}
+
 	//toggle whether we trigger (or not) on a beat
 	toggle(n) {
 		this.beats[n] = !this.beats[n];

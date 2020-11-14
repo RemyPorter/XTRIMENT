@@ -13,19 +13,23 @@ function basicScheduleTest() {
 }
 
 let library;
-let vp;
+let tl;
 function preload() {
 	library = new AudioLibrary(VOICE_DEFS);
-	//vp = new VoicePicker(library, "snarec0");
 }
 
 function setup() {
 	createCanvas(windowWidth/2, windowHeight);
-	//basicScheduleTest();
+	tl = new TimelineWidget(new BeatScheduler(11), width*0.9);
+}
+
+function mouseClicked() {
+	tl.mouseClicked(mouseX-(TIMELINE_SIZE+TIMELINE_GUTTER), mouseY);
 }
 
 function draw() {
 	clear();
-	background(128);
-	//vp.draw();
+	background(255);
+	translate(TIMELINE_SIZE+TIMELINE_GUTTER, TIMELINE_SIZE+TIMELINE_GUTTER);
+	tl.draw();
 }
