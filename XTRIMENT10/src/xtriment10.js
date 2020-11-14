@@ -33,11 +33,17 @@ function preload() {
 
 function setup() {
 	createCanvas(windowWidth/2, windowHeight);
+	let basePosition = TIMELINE_SIZE+TIMELINE_GUTTER;
+	let i = 0;
 	Object.keys(beat_config).forEach((k) => {
 		let bs = new BeatScheduler(beat_config[k]);
 		bs.onBeat(k, () => library[k].play());
 		beats.push(bs);
-		timelines.push(new TimelineWidget(bs, width*0.9));
+		timelines.push(new TimelineWidget(bs, 
+			new Rect(basePosition, basePosition + i * (TIMELINE_SIZE + TIMELINE_GUTTER),
+				 width*0.9, TIMELINE_SIZE))
+		);
+		i++;
 	});
 	clock = new Clock(4, ()=>0);
 	cl = new ClockArc(width*0.9);
@@ -45,7 +51,7 @@ function setup() {
 
 function mouseClicked() {
 	timelines.forEach((tl) => {
-		tl.mouseClicked(mouseX-(TIMELINE_SIZE+TIMELINE_GUTTER), mouseY);
+		tl.mouseClicked(mouseX, mouseY);
 	});
 }
 
@@ -55,9 +61,7 @@ function draw() {
 	let p = clock.tick();
 	beats.forEach((bs) => bs.tick(p));
 	push();
-	translate(TIMELINE_SIZE+TIMELINE_GUTTER, TIMELINE_SIZE+TIMELINE_GUTTER);
 	timelines.forEach((tl) => {
-		translate(0, TIMELINE_SIZE+TIMELINE_GUTTER);
 		tl.tick(p);
 		tl.draw();
 	});
