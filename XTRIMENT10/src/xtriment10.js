@@ -13,23 +13,55 @@ function basicScheduleTest() {
 }
 
 let library;
-let tl;
+let cl;
+let clock;
+let beat_config = {
+	"bass": 7,
+	"snarec0": 13,
+	"tom10-": 11,
+	"snared0": 17,
+	"splash": 5,
+	"crash": 3,
+	"hihat-closed": 23,
+	"hihat-open": 19
+}
+let beats = [];
+let timelines = [];
 function preload() {
 	library = new AudioLibrary(VOICE_DEFS);
 }
 
 function setup() {
 	createCanvas(windowWidth/2, windowHeight);
-	tl = new TimelineWidget(new BeatScheduler(11), width*0.9);
+	Object.keys(beat_config).forEach((k) => {
+		let bs = new BeatScheduler(beat_config[k]);
+		bs.onBeat(k, () => library[k].play());
+		beats.push(bs);
+		timelines.push(new TimelineWidget(bs, width*0.9));
+	});
+	clock = new Clock(4, ()=>0);
+	cl = new ClockArc(width*0.9);
 }
 
 function mouseClicked() {
-	tl.mouseClicked(mouseX-(TIMELINE_SIZE+TIMELINE_GUTTER), mouseY);
+	timelines.forEach((tl) => {
+		tl.mouseClicked(mouseX-(TIMELINE_SIZE+TIMELINE_GUTTER), mouseY);
+	});
 }
 
 function draw() {
 	clear();
 	background(255);
+	let p = clock.tick();
+	beats.forEach((bs) => bs.tick(p));
+	push();
 	translate(TIMELINE_SIZE+TIMELINE_GUTTER, TIMELINE_SIZE+TIMELINE_GUTTER);
-	tl.draw();
+	timelines.forEach((tl) => {
+		translate(0, TIMELINE_SIZE+TIMELINE_GUTTER);
+		tl.tick(p);
+		tl.draw();
+	});
+	pop();
+	cl.tick(p);
+	cl.draw();
 }

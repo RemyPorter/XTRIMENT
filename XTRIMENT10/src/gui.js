@@ -27,9 +27,7 @@ class BeatWidget {
 	}
 
 	mouseClicked(x, y) {
-		console.log(this.offset, x, this.offset+TIMELINE_SIZE);
 		if (x >= this.offset-TIMELINE_SIZE/2 && x < this.offset+TIMELINE_SIZE/2) {
-			console.log(this.index);
 			this.emitClick(this.index);
 		}
 	}
@@ -49,6 +47,9 @@ class TimelineWidget {
 		}
 	}
 
+	tick(progress) {
+		this.beatSched.tick(progress);
+	}
 	//a mouse was clicked in the X/Y coordinates relative to our origin
 	mouseClicked(adjX, adjY) {
 		this.beats.forEach((b) => b.mouseClicked(adjX, adjY));
@@ -58,5 +59,27 @@ class TimelineWidget {
 		for (let i = 0; i < this.beatSched.length(); i++) {
 			this.beats[i].draw(this.beatSched.beats[i]);
 		}
+	}
+}
+
+class ClockArc {
+	constructor(timelineWidth) {
+		this.width = timelineWidth;
+		this.x = 0;
+	}
+
+	tick(progress) {
+		this.x = this.width * progress;
+	}
+
+	draw() {
+		push();
+		translate(TIMELINE_SIZE*2, 0);
+		strokeWeight(TIMELINE_SIZE);
+		strokeCap(SQUARE);
+		stroke(255, 255, 255, 255);
+		blendMode(DIFFERENCE);
+		line(this.x, 0, this.x, height);
+		pop();
 	}
 }

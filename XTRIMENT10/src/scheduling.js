@@ -9,7 +9,11 @@ function addEvent(obj, name) {
 	};
 	obj[emitEvt] = (data) => {
 		for (const [obs, cb] of obj[obvs].entries()) {
-			cb(data);
+			try {
+				cb(data);
+			} catch (err) {
+				console.log(err);
+			}
 		}
 	}
 	obj[stopListening] = (obs) => {
