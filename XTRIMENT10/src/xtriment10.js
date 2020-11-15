@@ -15,6 +15,9 @@ function basicScheduleTest() {
 let library;
 let cl;
 let clock;
+
+let possible_beats = [2, 3, 5, 7, 11, 13, 17, 23];
+
 let beat_config = {
 	"bass": 7,
 	"snarec0": 13,
@@ -43,9 +46,19 @@ function preload() {
 	font = loadFont("fonts/E1234.ttf");
 }
 
+function randomRetime() {
+	let pos = shuffle(possible_beats);
+	let i = 0;
+	Object.keys(beat_config).forEach((k) => {
+		beat_config[k] = pos[i];
+		i++;
+	});
+}
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	let basePosition =TIMELINE_SIZE+TIMELINE_GUTTER;
+	randomRetime();
 	let i = 0;
 	Object.keys(beat_config).forEach((k) => {
 		let bs = new BeatScheduler(beat_config[k]);
