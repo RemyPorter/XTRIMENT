@@ -108,4 +108,5 @@ function draw() {
 	cl.tick(p);
 	cl.draw();
 	pop();
+
 }

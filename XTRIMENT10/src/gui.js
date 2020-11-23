@@ -53,7 +53,7 @@ class TimelineWidget {
 		addEvent(this, "Toggle");
 		this.rect = rect;
 		this.onToggle(beatSched, beatSched.toggle);
-		let steps = this.rect.w / this.beatSched.length() - 1;
+		let steps = this.rect.w / this.beatSched.length();
 		this.beats = [];
 		for (let i = 0; i < this.beatSched.length(); i++) {
 			let r = new Rect(this.rect.x+i*steps, this.rect.y, TIMELINE_SIZE, TIMELINE_SIZE);

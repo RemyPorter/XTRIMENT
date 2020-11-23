@@ -29,8 +29,8 @@ class TimeRangeScheduler {
 	}
 
 	tick(progress) {
-		let lastBeat = round(this.beats * this.lastProgress);
-		let thisBeat = round(this.beats * progress);
+		let lastBeat = floor(this.beats * this.lastProgress);
+		let thisBeat = floor(this.beats * progress);
 		if (thisBeat != lastBeat) this.emitTick(thisBeat);
 		this.lastProgress = progress;
 	}
@@ -47,7 +47,10 @@ class BeatScheduler {
 		this.scheduler = new TimeRangeScheduler(numBeats);
 		addEvent(this, "Beat");
 		this.scheduler.onTick(this, (beat) => {
-			if (this.beats[beat]) this.emitBeat(beat);
+			if (this.beats[beat]) {
+				 this.emitBeat(beat);
+				 console.log(beat);
+			}
 		});
 	}
 
