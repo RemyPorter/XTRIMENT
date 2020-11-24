@@ -25,10 +25,11 @@ let notes = [
 	"G#",
 	"A",
 	"Bb",
-	"B"
+    "B",
+    "C"
 ];
 function labelForNote(n) {
-	return notes[(n%60)%12];
+	return notes[(n%60)%notes.length];
 }
 let buttons = [];
 
@@ -42,7 +43,7 @@ function setup() {
         let btn = createButton(notes[i], v);
         btn.mousePressed(() => lockNote(v));
         buttons.push(btn);
-        btn.size(windowWidth/12, windowHeight);
+        btn.size(windowWidth/(notes.length+1), windowHeight);
     }
     document.addEventListener(visibilityChange, () => {
         if (document[hidden]) {
