@@ -21,6 +21,7 @@ function setup() {
         let btn = createButton(labelForNote(i), i);
         btn.size(windowWidth/13, windowHeight/6);
         btn.mousePressed(() => playNote(n));
+        btn.mouseReleased(() => stopNote(n));
         butts.push(btn);
         btn.parent(d);
     }
@@ -28,7 +29,12 @@ function setup() {
 
 function playNote(n) {
     let f = freqs[n];
-    inst.play(f, 1, 0, 2);
+    inst.noteAttack(f, 1, 0);
+}
+
+function stopNote(n) {
+    let f = freqs[n];
+    inst.noteRelease(f, 1);
     let jit = freqs[n] * jitter();
     freqs[n] += jit;
 }
